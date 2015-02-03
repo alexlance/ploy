@@ -3,19 +3,23 @@
 # This program checks to see if your source code is
 # up to date, using git origin branch. If there are
 # changes to be pulled down then it runs a git pull
-# and executes the command you specify.
+# and exits successfully.
 #
+# usage: ploy -d /path/to/gitrepo && run some other command
 
-while getopts ":d:e:" opt; do
+
+while getopts ":d:" opt; do
   case $opt in
     d) dir=$OPTARG ;;
-    e) cmd=$OPTARG ;;
-   \?) echo "usage: $(basename $0) -d /path/to/gitrepo/ -e 'command-to-execute-after-successful-pull'" && exit 1 ;;
+   \?) echo "usage: $(basename $0) -d /path/to/gitrepo/" && exit 1 ;;
   esac
 done
 
+# check that it is a git repo
 [ ! -d "${dir}/.git" ] && echo "${dir}/.git not found" && exit 1
 cd $dir
+
+# figure out what the current branch is
 BRANCH=$(git symbolic-ref --short -q HEAD)
 [ -z "${BRANCH}" ] && echo "Not able to detect branch, try: git checkout somebranch" && exit 1
 
@@ -24,10 +28,9 @@ HEAD=$(git ls-remote --heads origin $BRANCH | cut -f1)
 
 # if the commit hash of the remote HEAD doesn't exist locally, try and pull latest patches
 if [ "$(git log -n1 --pretty=%H)" != "$HEAD" ]; then
-  git pull origin $BRANCH
+  git pull -q origin $BRANCH > /dev/null
   if [ "$(git log -n1 --pretty=%H)" == "$HEAD" ]; then
-    eval $cmd
-    exit $?
+    exit 0
   else
     echo "trouble pulling patches to ${dir}: git pull origin ${BRANCH}" && exit 1
   fi
