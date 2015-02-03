@@ -35,3 +35,4 @@ if [ "$(git log -n1 --pretty=%H)" != "$HEAD" ]; then
     echo "trouble pulling patches to ${dir}: git pull origin ${BRANCH}" && exit 1
   fi
 fi
+exit 1
