@@ -32,7 +32,11 @@ HEAD=$(git ls-remote --heads origin $BRANCH | cut -f1)
 
 # if the commit hash of the remote HEAD doesn't exist locally, try and pull latest patches
 if [ "$(git log -n1 --pretty=%H)" != "$HEAD" ]; then
-  git fetch -q origin $BRANCH > /dev/null
+
+  # bit different for bare repos
+  git fetch -q origin +refs/heads/*:refs/heads/* > /dev/null
+  git update-server-info
+
   if [ "$(git log -n1 --pretty=%H)" == "$HEAD" ]; then
     exit 0
   else
