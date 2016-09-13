@@ -34,7 +34,7 @@ HEAD=$(git ls-remote --heads origin $BRANCH | cut -f1)
 if [ "$(git log -n1 --pretty=%H)" != "$HEAD" ]; then
 
   # bit different for bare repos
-  git fetch -q origin +refs/heads/*:refs/heads/* > /dev/null
+  git fetch -q origin +refs/*:refs/* > /dev/null
   git update-server-info
 
   if [ "$(git log -n1 --pretty=%H)" == "$HEAD" ]; then
