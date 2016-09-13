@@ -19,8 +19,9 @@ while getopts ":d:" opt; do
 done
 
 # check that it is a git repo
-[ ! -f "${dir}/info/refs" ] && echo "${dir}/info/refs not found, run git update-server-info ?" && exit 1
+[ ! -f ${dir}/HEAD ] && [ ! -d ${dir}/info ] && echo "Not in a bare git repo" && exit 1
 cd $dir
+git update-server-info
 
 # figure out what the current branch is
 BRANCH=$(git symbolic-ref --short -q HEAD)
